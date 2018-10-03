@@ -5,6 +5,7 @@ def open_json_file(filename):
     with open(filename, 'r') as f:
         return json.load(f)
 
+
 data = open_json_file('./data/test.json')
 data['id'] = 'python-realm'
 data['realm'] = 'python-realm'
