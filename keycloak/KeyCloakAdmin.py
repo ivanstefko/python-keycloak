@@ -5,6 +5,7 @@ import json
 class KeyCloakAdmin:
     def __init__(self):
         self.config = self.__open_json_file__('./conf/config.json')
+        self.data_paylaod = self.__open_json_file__('./conf/data-payload.json')
         self.verify_tls = self.config['VERIFY_TLS']
 
     def get_keycloak_token(self):
@@ -14,7 +15,8 @@ class KeyCloakAdmin:
 
         :return: Keycloak authentication token (access_token, refresh_token, expiration... )
         """
-        url = self.config['AUTH_API']['URL_AUTH_TOKEN']
+        url = json.dumps(self.config['ADMIN']['URL_AUTH_TOKEN']).format(hostname=self.data_paylaod['HOSTNAME'])
+
         client_id = self.config['ADMIN']['CLIENT_ID']
         username = self.config['ADMIN']['USERNAME']
         password = self.config['ADMIN']['PASSWORD']
@@ -63,7 +65,12 @@ class KeyCloakAdmin:
         :return: loaded file in json form
         """
         realm_data = self.__open_json_file__('./data/realm-data.json')
-        url = self.config['AUTH_API']['REALMS']
+
+        # set value to realm template according to settings in data config file
+        realm_data['id'] = self.data_paylaod['REALM']['ID']
+        realm_data['realm'] = self.data_paylaod['REALM']['NAME']
+
+        url = json.dumps(self.config['REALM']['URL']).format(hostname=self.data_paylaod['HOSTNAME'])
 
         try:
             header = {'Authorization': 'Bearer ' + self.get_access_token()}
@@ -85,7 +92,8 @@ class KeyCloakAdmin:
         return res
 
 
-# keycloak = KeyCloakAdmin()
+keycloak = KeyCloakAdmin()
+keycloak.create_realm()
 # keycloak.create_realm()
 
 # >>> REQUESTS DEBUGGING <<<

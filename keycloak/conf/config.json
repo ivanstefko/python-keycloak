@@ -4,13 +4,13 @@
     "PASSWORD": "admin",
     "REALM": "master",
     "CLIENT_ID": "admin-cli",
-    "GRANT_TYPE": "password"
+    "GRANT_TYPE": "password",
+    "URL_AUTH_TOKEN": "{hostname}/auth/realms/master/protocol/openid-connect/token"
 
   },
 
-  "AUTH_API": {
-    "URL_AUTH_TOKEN": "https://localhost:8443/auth/realms/master/protocol/openid-connect/token",
-    "REALMS": "https://localhost:8443/auth/admin/realms"
+  "REALM": {
+    "URL": "{hostname}/auth/admin/realms"
   },
 
   "VERIFY_TLS": false

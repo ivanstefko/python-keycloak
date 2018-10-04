@@ -1,0 +1,13 @@
+{
+  "HOSTNAME": "http://localhost:8180",
+
+  "REALM": {
+    "ID": "zoom-realm",
+    "NAME": "zoom-realm"
+  }
+
+
+
+}
+
+
