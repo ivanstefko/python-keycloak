@@ -1,5 +1,18 @@
 {
   "enabled": true,
   "id": "none",
-  "realm": "none"
+  "realm": "none",
+
+  "URL_AUTH_TOKEN": "{hostname}/auth/realms/master/protocol/openid-connect/token",
+
+  "ADMIN": {
+    "USERNAME": "admin",
+    "PASSWORD": "admin",
+    "REALM": "master",
+    "CLIENT_ID": "admin-cli",
+    "GRANT_TYPE": "password",
+    "URL_AUTH_TOKEN": "{hostname}/auth/realms/master/protocol/openid-connect/token"
+  }
+
 }
+
