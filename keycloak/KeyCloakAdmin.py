@@ -24,7 +24,7 @@ import ConfigParser
 class KeyCloakAdmin:
     """
     The KeyCloakAdmin class is used for proceed admin operation like create realm using admin-cli client and
-    generate Keycloak Authentication Token. 
+    generate Keycloak Authentication Token.
     """
 
     def __init__(self):
