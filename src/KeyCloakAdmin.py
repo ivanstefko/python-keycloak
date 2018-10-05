@@ -1,6 +1,6 @@
 import requests
-import json
-import ConfigParser
+from utils.FIleUtils import FileUtils
+
 
 # import logging
 # >>> REQUESTS DEBUGGING <<<
@@ -27,8 +27,8 @@ class KeyCloakAdmin:
     """
 
     def __init__(self):
-        self.config = self.__open_ini_file('./conf/config.ini')
-        self.data_paylaod = self.__open_ini_file('./conf/data-payload.ini')
+        self.config = FileUtils.open_ini_file('./conf/config.ini')
+        self.data_paylaod = FileUtils.open_ini_file('./conf/data-payload.ini')
         self.verify_tls = self.config.getboolean('DEFAULT', 'VERIFY_TLS')
 
     def get_keycloak_token(self):
@@ -70,27 +70,6 @@ class KeyCloakAdmin:
         """
         return self.get_keycloak_token().json()['access_token']
 
-    def __open_json_file(self, filename):
-        """
-        Private method used for loading data from external file.
-
-        :filename: the path with filename to be loaded
-        :return: loaded file in json form
-        """
-        with open(filename, 'r') as f:
-            return json.load(f)
-
-    def __open_ini_file(self, filename):
-        """
-        Private method used for loading data from external ini file.
-
-        :filename: the path with filename to be loaded
-        :return: loaded file in ini form
-        """
-        config = ConfigParser.ConfigParser()
-        config.read(filename)
-        return config
-
     def create_realm(self):
         """
         Private method used for loading data from external file.
@@ -98,13 +77,13 @@ class KeyCloakAdmin:
         :filename: the path with filename to be loaded
         :return: loaded file in json form
         """
-        realm_data = self.__open_json_file('./data/realm-data-template.json')
+        realm_data = FileUtils.open_json_file('./data/realm-data-template.json')
 
         # set value to realm template according to settings in data config file
         realm_data['id'] = self.data_paylaod.get('REALM', 'ID')
         realm_data['realm'] = self.data_paylaod.get('REALM', 'NAME')
 
-        url = self.config.get('REALM', 'URL').format(hostname=self.data_paylaod.get('DEFAULT', 'HOSTNAME'))
+        url = self.config.get('REST_API', 'REALM_URL').format(hostname=self.data_paylaod.get('DEFAULT', 'HOSTNAME'))
 
         try:
             header = {'Authorization': 'Bearer ' + self.get_access_token()}
