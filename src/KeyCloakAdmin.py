@@ -18,8 +18,7 @@ import ConfigParser
 # requests_log.setLevel(logging.DEBUG)
 # requests_log.propagate = True
 
-# TODO logging
-
+# TODO add logging instead of console print
 
 class KeyCloakAdmin:
     """
@@ -99,7 +98,7 @@ class KeyCloakAdmin:
         :filename: the path with filename to be loaded
         :return: loaded file in json form
         """
-        realm_data = self.__open_json_file('./data/realm-data.json')
+        realm_data = self.__open_json_file('./data/realm-data-template.json')
 
         # set value to realm template according to settings in data config file
         realm_data['id'] = self.data_paylaod.get('REALM', 'ID')
@@ -127,9 +126,6 @@ class KeyCloakAdmin:
         return res
 
 
-keycloak = KeyCloakAdmin()
-keycloak.create_realm()
+# keycloak = KeyCloakAdmin()
 # keycloak.create_realm()
-
-
 
