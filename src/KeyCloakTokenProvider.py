@@ -20,7 +20,7 @@ from utils.FileUtils import FileUtils
 
 # TODO add logging instead of console print
 
-class KeyCloakAdmin:
+class KeyCloakTokenProvider:
     """
     The KeyCloakAdmin class is used for proceed admin operation like create realm using admin-cli client and
     generate Keycloak Authentication Token.
@@ -70,41 +70,4 @@ class KeyCloakAdmin:
         """
         return self.get_keycloak_token().json()['access_token']
 
-    def create_realm(self):
-        """
-        Private method used for loading data from external file.
-
-        :filename: the path with filename to be loaded
-        :return: loaded file in json form
-        """
-        realm_data = FileUtils.open_json_file('./data/realm-data-template.json')
-
-        # set value to realm template according to settings in data config file
-        realm_data['id'] = self.data_paylaod.get('REALM', 'ID')
-        realm_data['realm'] = self.data_paylaod.get('REALM', 'NAME')
-
-        url = self.config.get('REST_API', 'REALM_URL').format(hostname=self.data_paylaod.get('DEFAULT', 'HOSTNAME'))
-
-        try:
-            header = {'Authorization': 'Bearer ' + self.get_access_token()}
-            res = requests.post(
-                    url=url,
-                    json=realm_data,
-                    headers=header,
-                    verify=self.verify_tls
-                    )
-
-        except requests.HTTPError as e:
-            print ("Unable to create realm {}".format(e))
-
-        if res.status_code == requests.codes.created:
-            print("Realm '{}' has been successfully created!".format(realm_data['realm']))
-        else:
-            print("Unable to create realm '{}'. The error status_code: {} with desc: {}".format(realm_data['realm'], res.status_code, res.content))
-
-        return res
-
-
-# keycloak = KeyCloakAdmin()
-# keycloak.create_realm()
 

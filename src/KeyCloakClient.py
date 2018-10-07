@@ -1,6 +1,6 @@
-from src.KeyCloakAdmin import KeyCloakAdmin
-from utils.FileUtils import FileUtils
+from src.KeyCloakTokenProvider import KeyCloakTokenProvider
 from src.RequestType import RequestType
+from utils.FileUtils import FileUtils
 
 import abc
 import json
@@ -17,7 +17,7 @@ config = FileUtils.open_ini_file('./conf/config.ini')
 class BaseRequest(object):
     __metaclass__ = abc.ABCMeta
 
-    admin = KeyCloakAdmin()
+    token_provider = KeyCloakTokenProvider()
 
     @abc.abstractmethod
     def get_url(self):
@@ -32,7 +32,7 @@ class BaseRequest(object):
         """Abstract method gets success/error messages used for logging."""
 
     def proceed(self):
-        token = self.admin.get_access_token()
+        token = self.token_provider.get_access_token()
         verify_tls = config.getboolean('DEFAULT', 'VERIFY_TLS')
 
         # print(json.dumps(self.get_data(), indent=4))
@@ -54,6 +54,27 @@ class BaseRequest(object):
         else:
             print(self.get_messages()['error'])
             print("Request finished with status code {} and reason {}.".format(res.status_code, res.content))
+
+
+class CreateRealmRequest(BaseRequest):
+
+    def __init__(self):
+        self.data = FileUtils.open_json_file('./data/realm-data-template.json')
+
+    def get_url(self):
+        """ {hostname}/auth/admin/realms """
+        return config.get('REST_API', 'REALM_URL').format(hostname=data_payload.get('DEFAULT', 'HOSTNAME'))
+
+    def get_data(self):
+        self.data['id'] = data_payload.get('REALM', 'ID') or NONE
+        self.data['realm'] = data_payload.get('REALM', 'NAME') or NONE
+        return self.data
+
+    def get_messages(self):
+        return {
+            "success": "Realm '{}' has been successfully created.".format(self.data['realm']),
+            "error": "Unable to create realm '{}'.".format(self.data['realm'])
+        }
 
 
 class ClientRoleRequest(BaseRequest):
@@ -84,7 +105,7 @@ class ClientRoleRequest(BaseRequest):
         }
 
 
-class ClientRequest(BaseRequest):
+class CreateClientRequest(BaseRequest):
 
     def __init__(self):
         self.data = FileUtils.open_json_file("./data/client-data-template.json")
@@ -119,6 +140,23 @@ class LdapFullSyncRequest(BaseRequest):
 
     def get_data(self):
         """ data not required for this request """
+        pass
+
+    def get_messages(self):
+        pass
+
+
+class MetricsEventListenerRequest(BaseRequest):
+
+    def __init__(self):
+        pass
+
+    def get_url(self):
+        """ {hostname}/auth/admin/realms/{realm_name}/events/config """
+        return config.get('REST_API', 'METRICS_LISTENER_URL').format(hostname=data_payload.get('DEFAULT', 'HOSTNAME'),
+                                                                     realm_name=data_payload.get('REALM', 'NAME'))
+
+    def get_data(self):
         pass
 
     def get_messages(self):
@@ -172,11 +210,13 @@ class KeyCloakRequestFactory:
         return globals()[request_type.value]()
 
 
-# factory = KeyCloakRequestFactory()
+print (globals())
 
+# factory = KeyCloakRequestFactory()
+#
+# factory.create_request(RequestType.CREATE_REALM).proceed()
 # factory.create_request(RequestType.CREATE_CLIENT).proceed()
 # factory.create_request(RequestType.ADD_CLIENT_ROLE).proceed()
 # factory.create_request(RequestType.ADD_LDAP_PROVIDER).proceed()
 # factory.create_request(RequestType.LDAP_FULL_SYNC).proceed()
-
 
