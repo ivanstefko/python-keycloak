@@ -1,0 +1,93 @@
+ {
+	"id": "_none_",
+	"name": "_none_",
+	"providerId": "ldap",
+	"providerType": "org.keycloak.storage.UserStorageProvider",
+	"parentId": "_none_",
+	"config": {
+	    "fullSyncPeriod": [
+	        "_none_"
+	    ],
+	    "pagination": [
+	        "true"
+	    ],
+	    "usersDn": [
+	        "_none_"
+	    ],
+	    "connectionPooling": [
+	        "true"
+	    ],
+	    "cachePolicy": [
+	        "DEFAULT"
+	    ],
+	    "useKerberosForPasswordAuthentication": [
+	        "false"
+	    ],
+	    "importEnabled": [
+	        "_none_"
+	    ],
+	    "enabled": [
+	        "_none_"
+	    ],
+	    "changedSyncPeriod": [
+	        "-1"
+	    ],
+	    "bindCredential": [
+	        "zoomadmin"
+	    ],
+	    "bindDn": [
+	        "_none_"
+	    ],
+	    "usernameLDAPAttribute": [
+	        "cn"
+	    ],
+	    "lastSync": [
+	        "1536735250"
+	    ],
+	    "vendor": [
+	        "ad"
+	    ],
+	    "uuidLDAPAttribute": [
+	        "objectGUID"
+	    ],
+	    "allowKerberosAuthentication": [
+	        "false"
+	    ],
+	    "connectionUrl": [
+	        "_none_"
+	    ],
+	    "syncRegistrations": [
+	        "false"
+	    ],
+	    "authType": [
+	        "simple"
+	    ],
+	    "debug": [
+	        "false"
+	    ],
+	    "searchScope": [
+	        "1"
+	    ],
+	    "useTruststoreSpi": [
+	        "ldapsOnly"
+	    ],
+	    "priority": [
+	        "0"
+	    ],
+	    "userObjectClasses": [
+	        "_none_"
+	    ],
+	    "rdnLDAPAttribute": [
+	        "cn"
+	    ],
+	    "editMode": [
+	        "READ_ONLY"
+	    ],
+	    "validatePasswordPolicy": [
+	        "false"
+	    ],
+	    "batchSizeForSync": [
+	        "1000"
+	    ]
+	}
+}

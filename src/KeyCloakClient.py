@@ -1,15 +1,18 @@
 from src.KeyCloakAdmin import KeyCloakAdmin
-from utils.FIleUtils import FileUtils
+from utils.FileUtils import FileUtils
 from src.RequestType import RequestType
+
 import abc
 import json
 import requests
+import ast
 
 NONE = '_none_'
 EMPTY_LIST = '[]'
 
 data_payload = FileUtils.open_ini_file('./conf/data-payload.ini')
 config = FileUtils.open_ini_file('./conf/config.ini')
+
 
 class BaseRequest(object):
     __metaclass__ = abc.ABCMeta
@@ -32,6 +35,8 @@ class BaseRequest(object):
         token = self.admin.get_access_token()
         verify_tls = config.getboolean('DEFAULT', 'VERIFY_TLS')
 
+        # print(json.dumps(self.get_data(), indent=4))
+
         try:
             header = {'Authorization': 'Bearer ' + token}
             res = requests.post(
@@ -51,10 +56,32 @@ class BaseRequest(object):
             print("Request finished with status code {} and reason {}.".format(res.status_code, res.content))
 
 
-class RoleRequest(BaseRequest):
+class ClientRoleRequest(BaseRequest):
 
     def __init__(self):
-        print(">>> RoleRequst")
+        self.data = FileUtils.open_json_file("./data/client-role-data-template.json")
+
+    def get_url(self):
+        """ {{hostname}}/auth/admin/realms/{{realm_name}}/clients/{{client_uuid}}/roles """
+        return config.get('REST_API', 'CLIENT_ROLE_URL').format(hostname=data_payload.get('DEFAULT', 'HOSTNAME'),
+                                                                realm_name=data_payload.get('REALM', 'NAME'),
+                                                                client_uuid=data_payload.get('CLIENT', 'UUID'))
+
+    def get_data(self):
+        self.data['name'] = data_payload.get('CLIENT_ROLE', 'NAME') or NONE
+        return self.data
+
+    def get_messages(self):
+        return {
+            "success": "The client role '{}' has been successfully added for client '{}'.".format(
+                self.data['name'],
+                data_payload.get('CLIENT', 'NAME')
+            ),
+            "error": "Unable to add client role '{}' to client '{}'.".format(
+                self.data['name'],
+                data_payload.get('CLIENT', 'NAME')
+            )
+        }
 
 
 class ClientRequest(BaseRequest):
@@ -65,18 +92,67 @@ class ClientRequest(BaseRequest):
     def get_data(self):
         self.data['id'] = data_payload.get('CLIENT', 'UUID') or NONE
         self.data['clientId'] = data_payload.get('CLIENT', 'NAME') or NONE
-        self.data['redirectUris'] = data_payload.get('CLIENT', 'REDIRECT_URIS').split(',') or EMPTY_LIST
-        self.data['webOrigins'] = data_payload.get('CLIENT', 'WEB_ORIGINS').split(',') or EMPTY_LIST
+        self.data['redirectUris'] = ast.literal_eval(data_payload.get('CLIENT', 'REDIRECT_URIS')) or EMPTY_LIST
+        self.data['webOrigins'] = ast.literal_eval(data_payload.get('CLIENT', 'WEB_ORIGINS')) or EMPTY_LIST
         return self.data
 
     def get_url(self):
+        """ {hostname}/auth/admin/realms/{realm_name}/clients """
         return config.get('REST_API', 'CLIENT_URL').format(hostname=data_payload.get('DEFAULT', 'HOSTNAME'),
-                                                           realmname=data_payload.get('REALM', 'NAME'))
+                                                           realm_name=data_payload.get('REALM', 'NAME'))
 
     def get_messages(self):
         return {
                 "success": "The client '{}' has been successfully created.".format(self.data['clientId']),
                 "error": "Unable to create '{}' client with id '{}'.".format(self.data['clientId'], self.data['id'])
+                }
+
+
+class LdapFullSyncRequest(BaseRequest):
+
+    def get_url(self):
+        """ LDAP_SYNC_USERS_URL = {hostname}/auth/admin/realms/{realm_name}/user-storage/{ldap_provider_id}/sync?action=triggerFullSync """
+        return config.get('REST_API', 'LDAP_SYNC_USERS_URL')\
+            .format(hostname=data_payload.get('DEFAULT', 'HOSTNAME'),
+                    realm_name=data_payload.get('REALM', 'NAME'),
+                    ldap_provider_id=data_payload.get('LDAP_PROVIDER', 'ID'))
+
+    def get_data(self):
+        """ data not required for this request """
+        pass
+
+    def get_messages(self):
+        pass
+
+
+class LdapProviderRequest(BaseRequest):
+
+    def __init__(self):
+        self.data = FileUtils.open_json_file("./data/ldap-provider-data-template.json")
+
+    def get_url(self):
+        """ {hostname}/auth/admin/realms/{realm_name}/components """
+        return config.get('REST_API', 'LDAP_PROVIDER_URL').format(hostname=data_payload.get('DEFAULT', 'HOSTNAME'),
+                                                                  realm_name=data_payload.get('REALM', 'NAME'))
+
+    def get_data(self):
+        self.data['id'] = data_payload.get('LDAP_PROVIDER', 'ID') or NONE
+        self.data['name'] = data_payload.get('LDAP_PROVIDER', 'NAME') or NONE
+        self.data['parentId'] = data_payload.get('REALM', 'NAME') or NONE
+        self.data['config']['fullSyncPeriod'] = [data_payload.get('LDAP_PROVIDER', 'FULL_SYNC_PERIOD')]
+        self.data['config']['usersDn'] = [data_payload.get('LDAP_PROVIDER', 'USER_DN')]
+        self.data['config']['enabled'] = [data_payload.get('LDAP_PROVIDER', 'ENABLED')]
+        self.data['config']['importEnabled'] = [data_payload.get('LDAP_PROVIDER', 'IMPORT_ENABLED')]
+        self.data['config']['bindCredential'] = [data_payload.get('LDAP_PROVIDER', 'BIND_CREDENTIAL')]
+        self.data['config']['bindDn'] = [data_payload.get('LDAP_PROVIDER', 'BIND_DN')]
+        self.data['config']['connectionUrl'] = [data_payload.get('LDAP_PROVIDER', 'CONNECTION_URL')]
+        self.data['config']['userObjectClasses'] = [data_payload.get('LDAP_PROVIDER', 'USER_OBJ_CLASS')]
+        return self.data
+
+    def get_messages(self):
+        return {
+                "success": "LDAP Provider '{}' has been successfully created.".format(self.data['name']),
+                "error": "Unable to create LDAP Provider '{}'.".format(self.data['name'])
                 }
 
 
@@ -96,5 +172,11 @@ class KeyCloakRequestFactory:
         return globals()[request_type.value]()
 
 
-factory = KeyCloakRequestFactory()
-factory.create_request(RequestType.NEW_CLIENT).proceed()
+# factory = KeyCloakRequestFactory()
+
+# factory.create_request(RequestType.CREATE_CLIENT).proceed()
+# factory.create_request(RequestType.ADD_CLIENT_ROLE).proceed()
+# factory.create_request(RequestType.ADD_LDAP_PROVIDER).proceed()
+# factory.create_request(RequestType.LDAP_FULL_SYNC).proceed()
+
+

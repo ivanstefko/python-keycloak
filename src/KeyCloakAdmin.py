@@ -1,5 +1,5 @@
 import requests
-from utils.FIleUtils import FileUtils
+from utils.FileUtils import FileUtils
 
 
 # import logging
