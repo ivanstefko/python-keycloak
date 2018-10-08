@@ -1,6 +1,9 @@
 from enum import Enum
 from src.KeyCloakRequestProvider import *
 
+__author__ = "Ivan Stefko / Zoom International"
+__email__ = "ivan.stefko@zoomint.com"
+
 
 class RequestType(Enum):
     """

@@ -18,7 +18,9 @@ from utils.FileUtils import FileUtils
 # requests_log.setLevel(logging.DEBUG)
 # requests_log.propagate = True
 
-# TODO add logging instead of console print
+__author__ = "Ivan Stefko / Zoom International"
+__email__ = "ivan.stefko@zoomint.com"
+
 
 class KeyCloakTokenProvider:
     """

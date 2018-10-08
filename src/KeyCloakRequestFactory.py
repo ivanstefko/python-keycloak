@@ -1,10 +1,13 @@
 from src.RequestType import RequestType
 
+__author__ = "Ivan Stefko / Zoom International"
+__email__ = "ivan.stefko@zoomint.com"
+
 
 class KeyCloakRequestFactory:
     """
-    Factory pattern for KeyCloak requests according to passed request type. If you want to add new request
-    please follow steps in README.md file.
+    Factory pattern for KeyCloak requests according to passed request type. If you want
+    to add new request please follow steps in README.md file.
     """
 
     def __init__(self):

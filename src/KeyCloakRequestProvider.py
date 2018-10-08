@@ -1,5 +1,6 @@
 from src.KeyCloakTokenProvider import KeyCloakTokenProvider
 from utils.FileUtils import FileUtils
+from src.LogConfig import logger
 
 import abc
 import requests
@@ -10,6 +11,9 @@ EMPTY_LIST = '[]'
 
 data_payload = FileUtils.open_ini_file('./conf/data-payload.ini')
 config = FileUtils.open_ini_file('./conf/config.ini')
+
+__author__ = "Ivan Stefko / Zoom International"
+__email__ = "ivan.stefko@zoomint.com"
 
 
 class BaseRequest(object):
@@ -57,15 +61,15 @@ class BaseRequest(object):
                     )
 
         except requests.HTTPError as e:
-            print (">> Unable to finish the request {}".format(e))
+            logger.error(">> Unable to finish the request {}".format(e))
 
         if res.status_code == requests.codes.created or \
            res.status_code == requests.codes.ok or \
            res.status_code == requests.codes.no_content:
-            print("{} {}".format(self.get_messages()['success'], res.content))
+            logger.debug("{} {}".format(self.get_messages()['success'], res.content))
         else:
-            print(self.get_messages()['error'])
-            print(">> Request finished with status code {} and reason {}.".format(res.status_code, res.content))
+            logger.debug(self.get_messages()['error'])
+            logger.debug(">> Request finished with status code {} and reason {}.".format(res.status_code, res.content))
 
 
 class CreateRealmRequest(BaseRequest):
@@ -103,7 +107,7 @@ class ClientRoleRequest(BaseRequest):
         self.data = FileUtils.open_json_file("./data/client-role-data-template.json")
 
     def get_url(self):
-        """ {{hostname}}/auth/admin/realms/{{realm_name}}/clients/{{client_uuid}}/roles """
+        """ {hostname}/auth/admin/realms/{realm_name}/clients/{client_uuid}/roles """
         return config.get('REST_API', 'CLIENT_ROLE_URL').format(hostname=data_payload.get('DEFAULT', 'HOSTNAME'),
                                                                 realm_name=data_payload.get('REALM', 'NAME'),
                                                                 client_uuid=data_payload.get('CLIENT', 'UUID'))
