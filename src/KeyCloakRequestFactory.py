@@ -25,5 +25,5 @@ if __name__ == '__main__':
     factory.create_request(RequestType.ADD_CLIENT_ROLE).proceed()
     factory.create_request(RequestType.ADD_LDAP_PROVIDER).proceed()
     factory.create_request(RequestType.LDAP_FULL_SYNC).proceed()
-    # factory.create_request(RequestType.ADD_METRICS_EVENT_LISTENER).proceed()
+    factory.create_request(RequestType.ADD_METRICS_EVENT_LISTENER).proceed()
 

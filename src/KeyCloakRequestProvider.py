@@ -30,15 +30,20 @@ class BaseRequest(object):
     def get_messages(self):
         """Abstract method gets success/error messages used for logging."""
 
+    def request_method(self):
+        return 'POST'       # the default request method is POST otherwise override this method.
+
     def proceed(self):
         token = self.token_provider.get_access_token()
         verify_tls = config.getboolean('DEFAULT', 'VERIFY_TLS')
 
         # print(json.dumps(self.get_data(), indent=4))
+        # print(self.get_url())
 
         try:
             header = {'Authorization': 'Bearer ' + token}
-            res = requests.post(
+            res = requests.request(
+                    method=self.request_method(),
                     url=self.get_url(),
                     json=self.get_data(),
                     headers=header,
@@ -48,7 +53,9 @@ class BaseRequest(object):
         except requests.HTTPError as e:
             print ("Unable to finish the request {}".format(e))
 
-        if res.status_code == requests.codes.created or res.status_code == requests.codes.ok:
+        if res.status_code == requests.codes.created or \
+           res.status_code == requests.codes.ok or \
+           res.status_code == requests.codes.no_content:
             print("{} {}".format(self.get_messages()['success'], res.content))
         else:
             print(self.get_messages()['error'])
@@ -161,12 +168,16 @@ class MetricsEventListenerRequest(BaseRequest):
     def get_data(self):
         self.data['eventsListeners'] = ast.literal_eval(data_payload.get('METRICS_LISTENER',
                                                                          'EVENTS_LISTENERS')) or EMPTY_LIST
+        return self.data
 
     def get_messages(self):
         return {
             "success": "The metric listener '{}' has been successfully added.".format(self.data['eventsListeners']),
             "error": "Unable to add metric listener '{}'.".format(self.data['eventsListeners'])
         }
+
+    def request_method(self):
+        return 'PUT'
 
 
 class LdapProviderRequest(BaseRequest):
