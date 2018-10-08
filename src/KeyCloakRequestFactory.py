@@ -2,6 +2,10 @@ from src.RequestType import RequestType
 
 
 class KeyCloakRequestFactory:
+    """
+    Factory pattern for KeyCloak requests according to passed request type. If you want to add new request
+    please follow steps in README.md file.
+    """
 
     def __init__(self):
         pass
@@ -17,9 +21,10 @@ class KeyCloakRequestFactory:
         return request_type.value()
 
 
-factory = KeyCloakRequestFactory()
-
 if __name__ == '__main__':
+    # let's create factory and do some magic
+    factory = KeyCloakRequestFactory()
+
     factory.create_request(RequestType.CREATE_REALM).proceed()
     factory.create_request(RequestType.CREATE_CLIENT).proceed()
     factory.create_request(RequestType.ADD_CLIENT_ROLE).proceed()

@@ -3,6 +3,10 @@ from src.KeyCloakRequestProvider import *
 
 
 class RequestType(Enum):
+    """
+    This enumeration defined possible requests type for KeyCloak REST API requests.
+    It's used as argument request type in KeyClaokRequestFactory class.
+    """
 
     CREATE_REALM = CreateRealmRequest
     CREATE_CLIENT = CreateClientRequest

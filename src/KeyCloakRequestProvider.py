@@ -2,7 +2,6 @@ from src.KeyCloakTokenProvider import KeyCloakTokenProvider
 from utils.FileUtils import FileUtils
 
 import abc
-import json
 import requests
 import ast
 
@@ -14,6 +13,13 @@ config = FileUtils.open_ini_file('./conf/config.ini')
 
 
 class BaseRequest(object):
+    """
+    BaseRequest for all our requests. This class contains of abstract method
+    which have to be implemented in parent class according to particular request
+    needed. If your request requires different request method type as 'POST'
+    you have to override 'request_method' method.
+    """
+
     __metaclass__ = abc.ABCMeta
 
     token_provider = KeyCloakTokenProvider()
@@ -63,6 +69,10 @@ class BaseRequest(object):
 
 
 class CreateRealmRequest(BaseRequest):
+    """
+    CreateRealmRequest class is used for create new realm according to
+    json data defined in 'realm-data-template.json' file.
+    """
 
     def __init__(self):
         self.data = FileUtils.open_json_file('./data/realm-data-template.json')
@@ -84,6 +94,10 @@ class CreateRealmRequest(BaseRequest):
 
 
 class ClientRoleRequest(BaseRequest):
+    """
+    ClientRoleRequest class is responsible for create new client's role
+    according to json data defined in 'client-role-data-template.json' file.
+    """
 
     def __init__(self):
         self.data = FileUtils.open_json_file("./data/client-role-data-template.json")
@@ -112,6 +126,10 @@ class ClientRoleRequest(BaseRequest):
 
 
 class CreateClientRequest(BaseRequest):
+    """
+    CreateClientRequest class is responsible for create new client
+    according to json data defined in 'client-data-template.json' file.
+    """
 
     def __init__(self):
         self.data = FileUtils.open_json_file("./data/client-data-template.json")
@@ -136,9 +154,12 @@ class CreateClientRequest(BaseRequest):
 
 
 class LdapFullSyncRequest(BaseRequest):
+    """
+    LdapFullSyncRequest sync all users from LDAP Provider. This requests doesn't require any POST data in json form.
+    """
 
     def get_url(self):
-        """ LDAP_SYNC_USERS_URL = {hostname}/auth/admin/realms/{realm_name}/user-storage/{ldap_provider_id}/sync?action=triggerFullSync """
+        """ {hostname}/auth/admin/realms/{realm_name}/user-storage/{ldap_provider_id}/sync?action=triggerFullSync """
         return config.get('REST_API', 'LDAP_SYNC_USERS_URL')\
             .format(hostname=data_payload.get('DEFAULT', 'HOSTNAME'),
                     realm_name=data_payload.get('REALM', 'NAME'),
@@ -156,6 +177,10 @@ class LdapFullSyncRequest(BaseRequest):
 
 
 class MetricsEventListenerRequest(BaseRequest):
+    """
+    MetricsEventListenerRequest added new custom Metrics Listener which is already available as SPI interface
+    in Kyecloak instance (added as .jar file into KeyCloak due to Prometeus/Grafana purposes)
+    """
 
     def __init__(self):
         self.data = FileUtils.open_json_file("./data/metrics-event-listener-data-template.json")
@@ -181,6 +206,9 @@ class MetricsEventListenerRequest(BaseRequest):
 
 
 class LdapProviderRequest(BaseRequest):
+    """
+    LDAPProviderRequests is responsible for create new provider to our LDAP Active Directory Server.
+    """
 
     def __init__(self):
         self.data = FileUtils.open_json_file("./data/ldap-provider-data-template.json")
