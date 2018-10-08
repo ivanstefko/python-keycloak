@@ -51,7 +51,7 @@ class BaseRequest(object):
                     )
 
         except requests.HTTPError as e:
-            print ("Unable to finish the request {}".format(e))
+            print (">> Unable to finish the request {}".format(e))
 
         if res.status_code == requests.codes.created or \
            res.status_code == requests.codes.ok or \
@@ -59,7 +59,7 @@ class BaseRequest(object):
             print("{} {}".format(self.get_messages()['success'], res.content))
         else:
             print(self.get_messages()['error'])
-            print("Request finished with status code {} and reason {}.".format(res.status_code, res.content))
+            print(">> Request finished with status code {} and reason {}.".format(res.status_code, res.content))
 
 
 class CreateRealmRequest(BaseRequest):
@@ -78,8 +78,8 @@ class CreateRealmRequest(BaseRequest):
 
     def get_messages(self):
         return {
-            "success": "Realm '{}' has been successfully created.".format(self.data['realm']),
-            "error": "Unable to create realm '{}'.".format(self.data['realm'])
+            "success": ">> Realm '{}' has been successfully created.".format(self.data['realm']),
+            "error": ">> Unable to create realm '{}'.".format(self.data['realm'])
         }
 
 
@@ -100,11 +100,11 @@ class ClientRoleRequest(BaseRequest):
 
     def get_messages(self):
         return {
-            "success": "The client role '{}' has been successfully added for client '{}'.".format(
+            "success": ">> The client role '{}' has been successfully added for client '{}'.".format(
                 self.data['name'],
                 data_payload.get('CLIENT', 'NAME')
             ),
-            "error": "Unable to add client role '{}' to client '{}'.".format(
+            "error": ">> Unable to add client role '{}' to client '{}'.".format(
                 self.data['name'],
                 data_payload.get('CLIENT', 'NAME')
             )
@@ -130,8 +130,8 @@ class CreateClientRequest(BaseRequest):
 
     def get_messages(self):
         return {
-                "success": "The client '{}' has been successfully created.".format(self.data['clientId']),
-                "error": "Unable to create '{}' client with id '{}'.".format(self.data['clientId'], self.data['id'])
+                "success": ">> The client '{}' has been successfully created.".format(self.data['clientId']),
+                "error": ">> Unable to create '{}' client with id '{}'.".format(self.data['clientId'], self.data['id'])
                 }
 
 
@@ -150,8 +150,8 @@ class LdapFullSyncRequest(BaseRequest):
 
     def get_messages(self):
         return {
-            "success": "LDAP Full Sync has finished successfully.",
-            "error": "Unable to sync LDAP users"
+            "success": ">> LDAP Full Sync has finished successfully.",
+            "error": ">> Unable to sync LDAP users"
         }
 
 
@@ -172,8 +172,8 @@ class MetricsEventListenerRequest(BaseRequest):
 
     def get_messages(self):
         return {
-            "success": "The metric listener '{}' has been successfully added.".format(self.data['eventsListeners']),
-            "error": "Unable to add metric listener '{}'.".format(self.data['eventsListeners'])
+            "success": ">> The metric listener '{}' has been successfully added.".format(self.data['eventsListeners']),
+            "error": ">> Unable to add metric listener '{}'.".format(self.data['eventsListeners'])
         }
 
     def request_method(self):
@@ -206,8 +206,8 @@ class LdapProviderRequest(BaseRequest):
 
     def get_messages(self):
         return {
-                "success": "LDAP Provider '{}' has been successfully created.".format(self.data['name']),
-                "error": "Unable to create LDAP Provider '{}'.".format(self.data['name'])
+                "success": ">> LDAP Provider '{}' has been successfully created.".format(self.data['name']),
+                "error": ">> Unable to create LDAP Provider '{}'.".format(self.data['name'])
                 }
 
 
