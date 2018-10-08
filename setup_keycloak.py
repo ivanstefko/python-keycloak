@@ -1,5 +1,5 @@
-from src.RequestType import RequestType
-from src.KeyCloakRequestFactory import KeyCloakRequestFactory
+from keycloak.RequestType import RequestType
+from keycloak.KeyCloakRequestFactory import KeyCloakRequestFactory
 
 
 if __name__ == '__main__':

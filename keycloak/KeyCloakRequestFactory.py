@@ -1,4 +1,4 @@
-from src.RequestType import RequestType
+from keycloak.RequestType import RequestType
 
 __author__ = "Ivan Stefko / Zoom International"
 __email__ = "ivan.stefko@zoomint.com"

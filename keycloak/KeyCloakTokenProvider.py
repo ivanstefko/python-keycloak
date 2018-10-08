@@ -29,13 +29,13 @@ class KeyCloakTokenProvider:
     """
 
     def __init__(self):
-        self.config = FileUtils.open_ini_file('./conf/config.ini')
-        self.data_payload = FileUtils.open_ini_file('./conf/data-payload.ini')
+        self.config = FileUtils.open_ini_file('./keycloak/conf/config.ini')
+        self.data_payload = FileUtils.open_ini_file('./keycloak/conf/data-payload.ini')
         self.verify_tls = self.config.getboolean('DEFAULT', 'VERIFY_TLS')
 
     def get_keycloak_token(self):
         """
-        Gets Keyclaok token object consist of access_token, refresh_token ... . The credentials for request are loaded
+        Gets keycloak token object consist of access_token, refresh_token ... . The credentials for request are loaded
         from external config file.
 
         :return: Keycloak authentication token (access_token, refresh_token, expiration... )
@@ -66,7 +66,7 @@ class KeyCloakTokenProvider:
 
     def get_access_token(self):
         """
-        Gets Keyclaok access token from Keyclaok token object
+        Gets keycloak access token from keycloak token object
 
         :return: Keycloak access_token
         """

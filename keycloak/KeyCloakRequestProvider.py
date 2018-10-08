@@ -1,6 +1,6 @@
-from src.KeyCloakTokenProvider import KeyCloakTokenProvider
+from keycloak.KeyCloakTokenProvider import KeyCloakTokenProvider
 from utils.FileUtils import FileUtils
-from src.LogConfig import logger
+from keycloak.LogConfig import logger
 
 import abc
 import requests
@@ -9,8 +9,8 @@ import ast
 NONE = '_none_'
 EMPTY_LIST = '[]'
 
-data_payload = FileUtils.open_ini_file('./conf/data-payload.ini')
-config = FileUtils.open_ini_file('./conf/config.ini')
+data_payload = FileUtils.open_ini_file('./keycloak/conf/data-payload.ini')
+config = FileUtils.open_ini_file('./keycloak/conf/config.ini')
 
 __author__ = "Ivan Stefko / Zoom International"
 __email__ = "ivan.stefko@zoomint.com"
@@ -30,7 +30,7 @@ class BaseRequest(object):
 
     @abc.abstractmethod
     def get_url(self):
-        """Abstract method gets the Keyclaok REST API request url."""
+        """Abstract method gets the keycloak REST API request url."""
 
     @abc.abstractmethod
     def get_data(self):
@@ -79,7 +79,7 @@ class CreateRealmRequest(BaseRequest):
     """
 
     def __init__(self):
-        self.data = FileUtils.open_json_file('./data/realm-data-template.json')
+        self.data = FileUtils.open_json_file('./keycloak/data/realm-data-template.json')
 
     def get_url(self):
         """ {hostname}/auth/admin/realms """
@@ -104,7 +104,7 @@ class ClientRoleRequest(BaseRequest):
     """
 
     def __init__(self):
-        self.data = FileUtils.open_json_file("./data/client-role-data-template.json")
+        self.data = FileUtils.open_json_file("./keycloak/data/client-role-data-template.json")
 
     def get_url(self):
         """ {hostname}/auth/admin/realms/{realm_name}/clients/{client_uuid}/roles """
@@ -136,7 +136,7 @@ class CreateClientRequest(BaseRequest):
     """
 
     def __init__(self):
-        self.data = FileUtils.open_json_file("./data/client-data-template.json")
+        self.data = FileUtils.open_json_file("./keycloak/data/client-data-template.json")
 
     def get_data(self):
         self.data['id'] = data_payload.get('CLIENT', 'UUID') or NONE
@@ -187,7 +187,7 @@ class MetricsEventListenerRequest(BaseRequest):
     """
 
     def __init__(self):
-        self.data = FileUtils.open_json_file("./data/metrics-event-listener-data-template.json")
+        self.data = FileUtils.open_json_file("./keycloak/data/metrics-event-listener-data-template.json")
 
     def get_url(self):
         """ {hostname}/auth/admin/realms/{realm_name}/events/config """
@@ -215,7 +215,7 @@ class LdapProviderRequest(BaseRequest):
     """
 
     def __init__(self):
-        self.data = FileUtils.open_json_file("./data/ldap-provider-data-template.json")
+        self.data = FileUtils.open_json_file("./keycloak/data/ldap-provider-data-template.json")
 
     def get_url(self):
         """ {hostname}/auth/admin/realms/{realm_name}/components """
