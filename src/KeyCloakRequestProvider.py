@@ -1,5 +1,4 @@
 from src.KeyCloakTokenProvider import KeyCloakTokenProvider
-from src.RequestType import RequestType
 from utils.FileUtils import FileUtils
 
 import abc
@@ -49,8 +48,8 @@ class BaseRequest(object):
         except requests.HTTPError as e:
             print ("Unable to finish the request {}".format(e))
 
-        if res.status_code == requests.codes.created:
-            print(self.get_messages()['success'])
+        if res.status_code == requests.codes.created or res.status_code == requests.codes.ok:
+            print("{} {}".format(self.get_messages()['success'], res.content))
         else:
             print(self.get_messages()['error'])
             print("Request finished with status code {} and reason {}.".format(res.status_code, res.content))
@@ -143,13 +142,16 @@ class LdapFullSyncRequest(BaseRequest):
         pass
 
     def get_messages(self):
-        pass
+        return {
+            "success": "LDAP Full Sync has finished successfully.",
+            "error": "Unable to sync LDAP users"
+        }
 
 
 class MetricsEventListenerRequest(BaseRequest):
 
     def __init__(self):
-        pass
+        self.data = FileUtils.open_json_file("./data/metrics-event-listener-data-template.json")
 
     def get_url(self):
         """ {hostname}/auth/admin/realms/{realm_name}/events/config """
@@ -157,10 +159,14 @@ class MetricsEventListenerRequest(BaseRequest):
                                                                      realm_name=data_payload.get('REALM', 'NAME'))
 
     def get_data(self):
-        pass
+        self.data['eventsListeners'] = ast.literal_eval(data_payload.get('METRICS_LISTENER',
+                                                                         'EVENTS_LISTENERS')) or EMPTY_LIST
 
     def get_messages(self):
-        pass
+        return {
+            "success": "The metric listener '{}' has been successfully added.".format(self.data['eventsListeners']),
+            "error": "Unable to add metric listener '{}'.".format(self.data['eventsListeners'])
+        }
 
 
 class LdapProviderRequest(BaseRequest):
@@ -194,29 +200,5 @@ class LdapProviderRequest(BaseRequest):
                 }
 
 
-class KeyCloakRequestFactory:
 
-    def __init__(self):
-        pass
-
-    def create_request(self, request_type):
-
-        # check whether passed request type is coming from RequestTYpe Enum
-        if not isinstance(request_type, RequestType):
-            raise TypeError('request_type must be an instance of RequestType Enum')
-
-        # creates instance of request object on the fly according to Enum value
-        # cond.: Enum value must match with Class name!!
-        return globals()[request_type.value]()
-
-
-print (globals())
-
-# factory = KeyCloakRequestFactory()
-#
-# factory.create_request(RequestType.CREATE_REALM).proceed()
-# factory.create_request(RequestType.CREATE_CLIENT).proceed()
-# factory.create_request(RequestType.ADD_CLIENT_ROLE).proceed()
-# factory.create_request(RequestType.ADD_LDAP_PROVIDER).proceed()
-# factory.create_request(RequestType.LDAP_FULL_SYNC).proceed()
 

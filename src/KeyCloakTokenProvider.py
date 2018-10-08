@@ -28,7 +28,7 @@ class KeyCloakTokenProvider:
 
     def __init__(self):
         self.config = FileUtils.open_ini_file('./conf/config.ini')
-        self.data_paylaod = FileUtils.open_ini_file('./conf/data-payload.ini')
+        self.data_payload = FileUtils.open_ini_file('./conf/data-payload.ini')
         self.verify_tls = self.config.getboolean('DEFAULT', 'VERIFY_TLS')
 
     def get_keycloak_token(self):
@@ -38,7 +38,7 @@ class KeyCloakTokenProvider:
 
         :return: Keycloak authentication token (access_token, refresh_token, expiration... )
         """
-        url = self.config.get('ADMIN', 'URL_AUTH_TOKEN').format(hostname=self.data_paylaod.get('DEFAULT', 'HOSTNAME'))
+        url = self.config.get('ADMIN', 'URL_AUTH_TOKEN').format(hostname=self.data_payload.get('DEFAULT', 'HOSTNAME'))
 
         client_id = self.config.get('ADMIN', 'CLIENT_ID')
         username = self.config.get('ADMIN', 'USERNAME')
