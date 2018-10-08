@@ -42,5 +42,5 @@ class SetupLogging(object):
         return log
 
 
-logger_instance = SetupLogging(os.path.join(os.getcwd(), './logs/python-keycloak-client.log'))
+logger_instance = SetupLogging(os.path.join(os.getcwd(), './python-keycloak-client.log'))
 logger = logger_instance.k8s_setup_logger()
