@@ -1,5 +1,5 @@
 import requests
-from utils.FileUtils import FileUtils
+from keycloak.utils.FileUtils import FileUtils
 
 
 # import logging

@@ -1,5 +1,5 @@
 import json
-import ConfigParser
+import configparser
 
 
 class FileUtils(object):
@@ -23,6 +23,6 @@ class FileUtils(object):
         :filename: the path with filename to be loaded
         :return: loaded file in ini form
         """
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(filename)
         return config

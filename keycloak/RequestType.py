@@ -17,4 +17,5 @@ class RequestType(Enum):
     ADD_LDAP_PROVIDER = LdapProviderRequest
     LDAP_FULL_SYNC = LdapFullSyncRequest
     ADD_METRICS_EVENT_LISTENER = MetricsEventListenerRequest
+    CLIENT_SECRET = ClientSecretRequest
 

@@ -1,5 +1,5 @@
 from keycloak.KeyCloakTokenProvider import KeyCloakTokenProvider
-from utils.FileUtils import FileUtils
+from keycloak.utils.FileUtils import FileUtils
 from keycloak.LogConfig import logger
 
 import abc
@@ -51,7 +51,7 @@ class BaseRequest(object):
         # print(self.get_url())
 
         try:
-            header = {'Authorization': 'Bearer ' + token}
+            header = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}
             res = requests.request(
                     method=self.request_method(),
                     url=self.get_url(),
@@ -96,6 +96,25 @@ class CreateRealmRequest(BaseRequest):
             "error": ">> Unable to create realm '{}'.".format(self.data['realm'])
         }
 
+class ClientSecretRequest(BaseRequest):
+
+    def get_url(self):
+        """ {hostname}/auth/admin/realms/master/clients/{clientId}/client-secret """
+        return config.get('REST_API', 'CLIENT_SECRET_URL').format(hostname=data_payload.get('DEFAULT', 'HOSTNAME'),
+                                                                          realm_name=data_payload.get('REALM', 'NAME'),
+                                                                          client_id=data_payload.get('CLIENT', 'UUID'))
+    # 
+    # def get_data(self):
+    #     return NONE
+
+    def request_method(self):
+        return 'GET'        
+
+    def get_messages(self):
+        return {
+            "success": ">> .... ",
+            "error": ">> Unable to get secret."
+        }
 
 class ClientRoleRequest(BaseRequest):
     """
